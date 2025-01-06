@@ -9,6 +9,7 @@ import org.example.bts_backend.Models.Songs;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.text.Normalizer;
 import java.util.List;
 
 @Service
@@ -17,6 +18,19 @@ public class LuceneIndexer {
     private Directory directory = new ByteBuffersDirectory();
     private StandardAnalyzer analyzer = new StandardAnalyzer();
 
+    // Phương thức chuẩn hóa dữ liệu
+    private String normalizeText(String input) {
+        if (input == null || input.isEmpty()) {
+            return "";
+        }
+        // Chuẩn hóa: Loại bỏ dấu và ký tự đặc biệt, chuyển thành chữ thường
+        return Normalizer.normalize(input, Normalizer.Form.NFD)
+                .replaceAll("[^\\p{ASCII}]", "")  // Loại bỏ dấu
+                .replaceAll("[^a-zA-Z0-9\\s]", "")  // Loại bỏ ký tự đặc biệt
+                .toLowerCase();  // Chuyển thành chữ thường
+    }
+
+    // Lập chỉ mục bài hát
     public void indexSongs(List<Songs> songs) throws IOException {
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(directory, config);
@@ -24,11 +38,17 @@ public class LuceneIndexer {
         for (Songs song : songs) {
             Document doc = new Document();
             doc.add(new StringField("id", song.getId(), Field.Store.YES));
+
+            // Chuẩn hóa title và lyrics trước khi lập chỉ mục
+            String normalizedTitle = normalizeText(song.getTitle());
+            String normalizedLyrics = normalizeText(song.getLyrics());
+
             doc.add(new TextField("title", song.getTitle() != null ? song.getTitle() : "", Field.Store.YES));
             doc.add(new TextField("lyrics", song.getLyrics() != null ? song.getLyrics() : "", Field.Store.YES));
+
+            // Thêm vào trường combined để tăng hiệu quả tìm kiếm
             doc.add(new TextField("combined",
-                    (song.getTitle() != null ? song.getTitle() : "") + " " +
-                            (song.getLyrics() != null ? song.getLyrics() : ""),
+                    normalizedTitle + " " + normalizedLyrics,
                     Field.Store.NO));
             writer.addDocument(doc);
         }
@@ -40,5 +60,3 @@ public class LuceneIndexer {
         return directory;
     }
 }
-
-

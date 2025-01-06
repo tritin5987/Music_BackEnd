@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import java.text.Normalizer;
 
 @Service
 public class SongsService {
@@ -20,9 +21,7 @@ public class SongsService {
     @Autowired
     private LuceneSearcher luceneSearcher;
 
-    public List<Songs> searchSongsByLyrics(String keyword) {
-        return songsRepository.searchTop3ByLyrics(keyword);
-    }
+
     public List<String> getAllSongTitles() {
         return songsRepository.findAllSongTitles();
     }
@@ -31,7 +30,20 @@ public class SongsService {
         luceneIndexer.indexSongs(allSongs);
     }
 
+    public String normalizeKeyword(String keyword) {
+        if (keyword == null || keyword.isEmpty()) {
+            return "";
+        }
+        // Loại bỏ dấu
+        String normalized = Normalizer.normalize(keyword, Normalizer.Form.NFD)
+                .replaceAll("[^\\p{ASCII}]", "");
+        // Loại bỏ ký tự đặc biệt và chuyển thành chữ thường
+        return normalized.replaceAll("[^a-zA-Z0-9\\s]", "").toLowerCase();
+    }
+
+    // Tìm kiếm bằng Lucene với từ khóa đã chuẩn hóa
     public List<String> searchSongsByKeyword(String keyword) throws Exception {
-        return luceneSearcher.searchSongs(keyword);
+        String normalizedKeyword = normalizeKeyword(keyword);
+        return luceneSearcher.searchSongs(normalizedKeyword);
     }
 }

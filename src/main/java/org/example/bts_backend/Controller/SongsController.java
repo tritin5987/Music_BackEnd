@@ -16,13 +16,15 @@ public class SongsController {
     @Autowired
     private SongsService songsService;
 
+    // Tìm kiếm bài hát
     @GetMapping("/search")
     public ResponseEntity<List<String>> searchSongs(@RequestParam String keyword) {
         try {
+            // Gọi đến service tìm kiếm với keyword đã chuẩn hóa
             List<String> results = songsService.searchSongsByKeyword(keyword);
             return ResponseEntity.ok(results);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(List.of("Error during search"));
+            return ResponseEntity.status(500).body(List.of("Error during search: " + e.getMessage()));
         }
     }
 
