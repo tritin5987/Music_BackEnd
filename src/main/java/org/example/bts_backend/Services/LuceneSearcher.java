@@ -25,18 +25,38 @@ public class LuceneSearcher {
         DirectoryReader reader = DirectoryReader.open(directory);
         IndexSearcher searcher = new IndexSearcher(reader);
 
-        QueryParser parser = new QueryParser("combined", new StandardAnalyzer());
-        Query query = parser.parse(queryStr);
+        QueryParser titleParser = new QueryParser("title", new StandardAnalyzer());
+        QueryParser lyricsParser = new QueryParser("lyrics", new StandardAnalyzer());
+        QueryParser artistParser = new QueryParser("artist", new StandardAnalyzer());
 
-        TopDocs results = searcher.search(query, 3);  // Trả về tối đa 3 kết quả
+        Query titleQuery = titleParser.parse(queryStr);
+        Query lyricsQuery = lyricsParser.parse(queryStr);
+        Query artistQuery = artistParser.parse(queryStr);
+
+        // Thực hiện tìm kiếm với mỗi tiêu chí
+        TopDocs titleResults = searcher.search(titleQuery, 5);  // Tối đa 5 kết quả
+        TopDocs lyricsResults = searcher.search(lyricsQuery, 5);
+        TopDocs artistResults = searcher.search(artistQuery, 5);
+
         List<String> songTitles = new ArrayList<>();
 
-        for (ScoreDoc scoreDoc : results.scoreDocs) {
+        // Lấy kết quả từ title và lyrics
+        for (ScoreDoc scoreDoc : titleResults.scoreDocs) {
             Document doc = searcher.doc(scoreDoc.doc);
-            songTitles.add(doc.get("title"));
+            songTitles.add("Tên bài hát: " + doc.get("title"));
         }
+        for (ScoreDoc scoreDoc : lyricsResults.scoreDocs) {
+            Document doc = searcher.doc(scoreDoc.doc);
+            songTitles.add("Lời của bài hát: " + doc.get("title"));
+        }
+        for (ScoreDoc scoreDoc : artistResults.scoreDocs) {
+            Document doc = searcher.doc(scoreDoc.doc);
+            songTitles.add("Tác giả: " + doc.get("artist"));
+        }
+
         reader.close();
         return songTitles;
     }
+
 }
 

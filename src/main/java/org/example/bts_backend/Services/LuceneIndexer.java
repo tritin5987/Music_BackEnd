@@ -39,17 +39,21 @@ public class LuceneIndexer {
             Document doc = new Document();
             doc.add(new StringField("id", song.getId(), Field.Store.YES));
 
-            // Chuẩn hóa title và lyrics trước khi lập chỉ mục
+            // Chuẩn hóa dữ liệu
             String normalizedTitle = normalizeText(song.getTitle());
             String normalizedLyrics = normalizeText(song.getLyrics());
+            String normalizedArtist = normalizeText(song.getArtist());
 
+            // Thêm các trường tìm kiếm
             doc.add(new TextField("title", song.getTitle() != null ? song.getTitle() : "", Field.Store.YES));
             doc.add(new TextField("lyrics", song.getLyrics() != null ? song.getLyrics() : "", Field.Store.YES));
+            doc.add(new TextField("artist", song.getArtist() != null ? song.getArtist() : "", Field.Store.YES));
 
-            // Thêm vào trường combined để tăng hiệu quả tìm kiếm
+            // Chỉ mục kết hợp để tăng cường tìm kiếm
             doc.add(new TextField("combined",
-                    normalizedTitle + " " + normalizedLyrics,
+                    normalizedTitle + " " + normalizedLyrics + " " + normalizedArtist,
                     Field.Store.NO));
+
             writer.addDocument(doc);
         }
 
