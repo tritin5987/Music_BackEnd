@@ -2,6 +2,7 @@ package org.example.bts_backend.Controller;
 
 import org.example.bts_backend.Models.Songs;
 import org.example.bts_backend.Services.SongsService;
+import org.example.bts_backend.dto.SongDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +42,10 @@ public class SongsController {
     @GetMapping("/titles")
     public List<String> getAllSongTitles() {
         return songsService.getAllSongTitles();
+    }
+    @GetMapping
+    public List<SongDTO> getAllSongs() {
+        return songsService.getAllSongs(); // Gọi tới service để lấy dữ liệu
     }
 }
 

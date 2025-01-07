@@ -2,6 +2,7 @@ package org.example.bts_backend.Services;
 
 import org.example.bts_backend.Models.Songs;
 import org.example.bts_backend.Repository.SongsRepository;
+import org.example.bts_backend.dto.SongDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,5 +46,8 @@ public class SongsService {
     public List<String> searchSongsByKeyword(String keyword) throws Exception {
         String normalizedKeyword = normalizeKeyword(keyword);
         return luceneSearcher.searchSongs(normalizedKeyword);
+    }
+    public List<SongDTO> getAllSongs() {
+        return songsRepository.findAllSongs(); // Trả về danh sách các bài hát dưới dạng SongDTO
     }
 }
