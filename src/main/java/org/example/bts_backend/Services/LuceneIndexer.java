@@ -48,6 +48,8 @@ public class LuceneIndexer {
             doc.add(new TextField("title", song.getTitle() != null ? song.getTitle() : "", Field.Store.YES));
             doc.add(new TextField("lyrics", song.getLyrics() != null ? song.getLyrics() : "", Field.Store.YES));
             doc.add(new TextField("artist", song.getArtist() != null ? song.getArtist() : "", Field.Store.YES));
+            doc.add(new StringField("source", song.getSource() != null ? song.getSource() : "", Field.Store.YES));
+            doc.add(new StringField("image", song.getImage() != null ? song.getImage() : "", Field.Store.YES));
 
             // Chỉ mục kết hợp để tăng cường tìm kiếm
             doc.add(new TextField("combined",

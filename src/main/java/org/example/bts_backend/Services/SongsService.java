@@ -43,10 +43,11 @@ public class SongsService {
     }
 
     // Tìm kiếm bằng Lucene với từ khóa đã chuẩn hóa
-    public List<String> searchSongsByKeyword(String keyword) throws Exception {
+    public List<SongDTO> searchSongsByKeyword(String keyword) throws Exception {
         String normalizedKeyword = normalizeKeyword(keyword);
         return luceneSearcher.searchSongs(normalizedKeyword);
     }
+
     public List<SongDTO> getAllSongs() {
         return songsRepository.findAllSongs(); // Trả về danh sách các bài hát dưới dạng SongDTO
     }
