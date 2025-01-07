@@ -38,9 +38,9 @@ public class LuceneSearcher {
 
                     doc.get("title"),
                     doc.get("artist"),
+                    doc.get("image"),
+                    doc.get("source")  // URL phát nhạc
 
-                    doc.get("source"),  // URL phát nhạc
-                    doc.get("image")
 
             );
             songs.add(song);
