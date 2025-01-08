@@ -26,29 +26,47 @@ public class LuceneSearcher {
         DirectoryReader reader = DirectoryReader.open(directory);
         IndexSearcher searcher = new IndexSearcher(reader);
 
-        QueryParser parser = new QueryParser("combined", new StandardAnalyzer());
-        Query query = parser.parse(queryStr);
+        // Tìm kiếm trên nhiều trường: tiêu đề, lời bài hát và tác giả
+        QueryParser titleParser = new QueryParser("title", new StandardAnalyzer());
+        QueryParser lyricsParser = new QueryParser("lyrics", new StandardAnalyzer());
+        QueryParser artistParser = new QueryParser("artist", new StandardAnalyzer());
 
-        TopDocs results = searcher.search(query, 10);  // Tối đa 10 kết quả
+        Query titleQuery = titleParser.parse(queryStr);
+        Query lyricsQuery = lyricsParser.parse(queryStr);
+        Query artistQuery = artistParser.parse(queryStr);
+
+        // Kết hợp tất cả các truy vấn bằng cách sử dụng BooleanQuery
+        BooleanQuery.Builder combinedQuery = new BooleanQuery.Builder();
+        combinedQuery.add(titleQuery, BooleanClause.Occur.SHOULD);
+        combinedQuery.add(lyricsQuery, BooleanClause.Occur.SHOULD);
+        combinedQuery.add(artistQuery, BooleanClause.Occur.SHOULD);
+
+        TopDocs results = searcher.search(combinedQuery.build(), 3);  // Tối đa 10 kết quả
 
         List<SongDTO> songs = new ArrayList<>();
         for (ScoreDoc scoreDoc : results.scoreDocs) {
             Document doc = searcher.doc(scoreDoc.doc);
-            SongDTO song = new SongDTO(
 
+            // Định dạng kết quả trả về, hiển thị loại kết quả (tiêu đề/lời bài hát/tác giả)
+            String matchedField;
+            if (doc.get("title").toLowerCase().contains(queryStr.toLowerCase())) {
+                matchedField = "Ten Bai Hat";
+            } else if (doc.get("lyrics") != null && doc.get("lyrics").toLowerCase().contains(queryStr.toLowerCase())) {
+                matchedField = "Loi Cua Bai Hat";
+            } else {
+                matchedField = "Tac Gia";
+            }
+
+            SongDTO song = new SongDTO(
                     doc.get("title"),
                     doc.get("artist"),
                     doc.get("image"),
-                    doc.get("source")  // URL phát nhạc
-
-
+                    doc.get("source"),
+                    matchedField // Gửi thêm thông tin về loại kết quả
             );
             songs.add(song);
         }
         reader.close();
         return songs;
     }
-
-
 }
-

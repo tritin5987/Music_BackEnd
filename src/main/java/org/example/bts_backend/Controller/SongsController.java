@@ -5,6 +5,7 @@ import org.example.bts_backend.Services.SongsService;
 import org.example.bts_backend.dto.SongDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -24,6 +25,7 @@ public class SongsController {
     }
 
     @PostMapping("/index")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> indexSongs() {
         try {
             songsService.indexAllSongs();
@@ -32,6 +34,7 @@ public class SongsController {
             return ResponseEntity.status(500).body("Error during indexing");
         }
     }
+
 
     @GetMapping("/titles")
     public List<String> getAllSongTitles() {

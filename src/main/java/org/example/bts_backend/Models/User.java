@@ -2,9 +2,11 @@ package org.example.bts_backend.Models;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 
 @Entity
 @Data
+@Getter
 @Table(name = "users")
 public class User {
     @Id
@@ -22,4 +24,5 @@ public class User {
 
     @Column(nullable = false)
     private String role;  // ADMIN, USER
+
 }

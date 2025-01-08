@@ -23,5 +23,7 @@ public interface SongsRepository extends JpaRepository<Songs, String> {
 
     @Query("SELECT new org.example.bts_backend.dto.SongDTO(s.title, s.artist, s.image, s.source) FROM Songs s")
     List<SongDTO> findAllSongs();
+
+
 }
 
