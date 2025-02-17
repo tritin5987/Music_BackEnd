@@ -74,7 +74,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'john@example.com','$2a$10$GDwlncL4I72lHssclotSbeV/nVO1w.41hQnEMavyUIxm82VoKyhiK','USER','john_doe'),(4,'user1@example.com','$2a$10$50.jiRauUSh.WIXtZ6pCk.gya1.ZN5SyXm3UB.aNt0OT1md7VwiOK','USER','user1'),(5,'bdtcloner1@gmail.com','$2a$10$xD3ULFPxY56S4zRod0xV8eyH43xjqsJB0uSH4O0tD6qwhZ0HCz8bm','USER','user2'),(6,'admin@example.com','$2a$10$D2/0C7B/QBFU5sBdCDJXzuCxBQHJ16uLf457ksvI76VT4ZmoMh8s.','USER','admin');
+INSERT INTO `users` VALUES (1,'john@example.com','$2a$10$GDwlncL4I72lHssclotSbeV/nVO1w.41hQnEMavyUIxm82VoKyhiK','USER','john_doe'),(4,'user1@example.com','$2a$10$50.jiRauUSh.WIXtZ6pCk.gya1.ZN5SyXm3UB.aNt0OT1md7VwiOK','USER','user1'),(5,'bdtcloner1@gmail.com','$2a$10$xD3ULFPxY56S4zRod0xV8eyH43xjqsJB0uSH4O0tD6qwhZ0HCz8bm','USER','user2'),(6,'admin@example.com','$2a$10$D2/0C7B/QBFU5sBdCDJXzuCxBQHJ16uLf457ksvI76VT4ZmoMh8s.','ADMIN','admin');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
