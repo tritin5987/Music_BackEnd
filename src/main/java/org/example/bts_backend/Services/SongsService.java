@@ -18,7 +18,7 @@ public class SongsService {
 
     @Autowired
     private LuceneIndexer luceneIndexer;
-
+    
     @Autowired
     private LuceneSearcher luceneSearcher;
 
