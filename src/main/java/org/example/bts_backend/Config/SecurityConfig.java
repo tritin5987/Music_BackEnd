@@ -31,6 +31,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())  // Vô hiệu hóa CSRF
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/music/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()  // Cho phép đăng ký và đăng nhập
                         .anyRequest().authenticated()  // Các endpoint khác yêu cầu xác thực
                 )

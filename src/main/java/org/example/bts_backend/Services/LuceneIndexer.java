@@ -35,6 +35,8 @@ public class LuceneIndexer {
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(directory, config);
 
+        writer.deleteAll();
+
         for (Songs song : songs) {
             Document doc = new Document();
             doc.add(new StringField("id", song.getId(), Field.Store.YES));
