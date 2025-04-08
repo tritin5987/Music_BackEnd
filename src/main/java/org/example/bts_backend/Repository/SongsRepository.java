@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SongsRepository extends JpaRepository<Songs, String> {
@@ -24,6 +25,7 @@ public interface SongsRepository extends JpaRepository<Songs, String> {
     @Query("SELECT new org.example.bts_backend.dto.SongDTO(s.title, s.artist, s.image, s.source) FROM Songs s")
     List<SongDTO> findAllSongs();
 
+    Optional<Songs> findByTitleAndArtist(String title, String artist);
 
 }
 
