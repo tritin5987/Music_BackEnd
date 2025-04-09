@@ -1,6 +1,7 @@
 package org.example.bts_backend.Controller;
 
 import org.example.bts_backend.Models.Songs;
+import org.example.bts_backend.Services.SongsCrawlService;
 import org.example.bts_backend.Services.SongsService;
 import org.example.bts_backend.dto.SongDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +18,10 @@ import java.util.Map;
 public class SongsCrawlController {
 
     @Autowired
-    private SongsService songsService;
+    private SongsCrawlService songscrawlService;
     @GetMapping("")
-    public Map<String, String> compareWithNCTPlaylist() {
-        return songsService.compareSongsFromNCT();
+    public Map<String, Object> compareSongsFromNCT() {
+        return songscrawlService.compareSongsFromNCT();
     }
 }
 

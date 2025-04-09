@@ -55,39 +55,5 @@ public class SongsService {
     public List<SongDTO> getAllSongs() {
         return songsRepository.findAllSongs(); // Trả về danh sách các bài hát dưới dạng SongDTO
     }
-    // So sánh bài hát từ trang NCT với database
-    public Map<String, String> compareSongsFromNCT() {
-        Map<String, String> result = new LinkedHashMap<>();
-
-        try {
-            String playlistUrl = "https://www.nhaccuatui.com/playlist/top-100-nhac-tre-hay-nhat-various-artists.m3liaiy6vVsF.html";
-            Document doc = Jsoup.connect(playlistUrl)
-                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
-                    .get();
-
-            Elements items = doc.select("li[itemprop=tracks]");
-            Set<String> dbTitles = new HashSet<>();
-            for (Songs song : songsRepository.findAll()) {
-                dbTitles.add(normalizeKeyword(song.getTitle()));
-            }
-
-            for (Element item : items) {
-                String title = item.selectFirst("meta[itemprop=name]").attr("content").trim();
-                String url = item.selectFirst("meta[itemprop=url]").attr("content").trim();
-                String normalizedTitle = normalizeKeyword(title);
-
-                if (dbTitles.contains(normalizedTitle)) {
-                    result.put(title, "✅ Skip");
-                } else {
-                    result.put(title, "➕ Add " + url);
-                }
-            }
-        } catch (Exception e) {
-            result.put("❌ Lỗi", e.getMessage());
-        }
-
-        return result;
-    }
-
 
 }
