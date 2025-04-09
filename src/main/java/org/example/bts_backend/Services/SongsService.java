@@ -27,6 +27,24 @@ public class SongsService {
     private LuceneSearcher luceneSearcher;
 
 
+    // Phương thức thêm bài hát chỉ cần 3 tham số: title, artist, source
+    public Songs addSong(String title, String artist, String source) {
+        Songs song = new Songs();
+        song.setTitle(title);
+        song.setArtist(artist);
+        song.setSource(source);
+
+        // Các trường khác có thể để giá trị mặc định
+        song.setImage("");  // Nếu không có hình ảnh, có thể để trống
+        song.setDuration(0);  // Nếu không có thời gian, có thể để là 0
+        song.setLyrics("");  // Nếu không có lời bài hát, có thể để trống
+        song.setFavorite(false);  // Giá trị mặc định
+        song.setCounter(0);  // Giá trị mặc định
+        song.setReplay(0);  // Giá trị mặc định
+
+        // Lưu bài hát vào database
+        return songsRepository.save(song);
+    }
     public List<String> getAllSongTitles() {
         return songsRepository.findAllSongTitles();
     }

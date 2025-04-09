@@ -19,6 +19,15 @@ public class SongsController {
     @Autowired
     private SongsService songsService;
 
+    @PostMapping("/add")
+    public Songs addSong(@RequestBody Map<String, String> songData) {
+        String title = songData.get("title");
+        String artist = songData.get("artist");
+        String source = songData.get("source");
+
+        return songsService.addSong(title, artist, source);
+    }
+
     // Tìm kiếm bài hát
     @GetMapping("/search")
     public List<SongDTO> searchSongs(@RequestParam String keyword) throws Exception {

@@ -64,6 +64,7 @@ public class SongsCrawlService {
                 }
 
                 String title = item.selectFirst("meta[itemprop=name]").attr("content").trim();
+                String artist = item.select(".name_singer").text().trim(); // Get artist name from the h4 tag
                 String url = item.selectFirst("meta[itemprop=url]").attr("content").trim();
                 String normalizedTitle = normalizeKeyword(title);
 
@@ -130,6 +131,9 @@ public class SongsCrawlService {
                         songData.put("error", ex.getMessage());
                     }
                 }
+
+                // Add artist info along with other details
+                songData.put("artist", artist);  // Add the artist name
 
                 result.put(title, songData);
                 counter++;  // Increment counter after processing each song
