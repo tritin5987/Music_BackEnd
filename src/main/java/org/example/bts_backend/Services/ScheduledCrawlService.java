@@ -23,14 +23,19 @@ public class ScheduledCrawlService {
     private SongsCrawlService songsCrawlService;  // Đã có hàm compareSongsFromNCT()
 
     @Autowired
-    private SongsService songsService;            // Đã có hàm addSong(...)
+    private SongsService songsService;
+
+    @Autowired
+    private GetCookieService getCookieService;// Đã có hàm addSong(...)
 
     /**
      * Chạy lúc 00:00 (nửa đêm) mỗi ngày
      */
-    @Scheduled(cron = "0 35 21 * * ?")
+    @Scheduled(cron = "0 49 22 * * ?")
     public void autoCrawlAndAddSongs() {
         try {
+
+            getCookieService.fetchCookiesAndSaveToFile();
             // (1) Gọi hàm crawl
             Map<String, Object> crawledSongs = songsCrawlService.compareSongsFromNCT();
 
