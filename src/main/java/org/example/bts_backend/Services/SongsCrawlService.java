@@ -12,9 +12,14 @@ import org.springframework.stereotype.Service;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.Scanner;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -39,7 +44,28 @@ public class SongsCrawlService {
         return normalized.replaceAll("[^a-zA-Z0-9\\s]", "").toLowerCase();
     }
 
-    // So sánh bài hát từ trang NCT với database và trả về kết quả dưới dạng JSON
+    // Đọc cookie từ file
+    private Map<String, String> readCookiesFromFile(String filePath) {
+        Map<String, String> cookies = new HashMap<>();
+        try (Scanner scanner = new Scanner(new File(filePath))) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine().trim();
+                if (line.startsWith("cookie=")) {
+                    String rawCookie = line.substring("cookie=".length());
+                    for (String c : rawCookie.split(";")) {
+                        String[] pair = c.trim().split("=", 2);
+                        if (pair.length == 2) cookies.put(pair[0], pair[1]);
+                    }
+                    break; // Chỉ lấy dòng đầu tiên chứa cookie
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("❌ Không thể đọc cookie từ file: " + e.getMessage());
+        }
+        return cookies;
+    }
+
+
     public Map<String, Object> compareSongsFromNCT() {
         Map<String, Object> result = new LinkedHashMap<>();
 
@@ -49,22 +75,19 @@ public class SongsCrawlService {
                     .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
                     .get();
 
-            Elements items = doc.select("li[itemprop=tracks]");  // Get song list
+            Elements items = doc.select("li[itemprop=tracks]");
             Set<String> dbTitles = new HashSet<>();
             for (Songs song : songsRepository.findAll()) {
-                dbTitles.add(normalizeKeyword(song.getTitle())); // Normalize title for comparison
+                dbTitles.add(normalizeKeyword(song.getTitle()));
             }
 
-            int counter = 0;  // To keep track of the number of songs processed
+            int counter = 0;
 
             for (Element item : items) {
-                // Process only the first 10 songs
-                if (counter >= 10) {
-                    break;
-                }
+                if (counter >= 10) break;
 
                 String title = item.selectFirst("meta[itemprop=name]").attr("content").trim();
-                String artist = item.select(".name_singer").text().trim(); // Get artist name from the h4 tag
+                String artist = item.select(".name_singer").text().trim();
                 String url = item.selectFirst("meta[itemprop=url]").attr("content").trim();
                 String normalizedTitle = normalizeKeyword(title);
 
@@ -74,7 +97,6 @@ public class SongsCrawlService {
                     songData.put("status", "Skip");
                 } else {
                     songData.put("status", "Add");
-                    // Retrieve MP3 link for the added song
                     try {
                         Document songPage = Jsoup.connect(url)
                                 .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
@@ -82,7 +104,7 @@ public class SongsCrawlService {
 
                         String html = songPage.html();
                         String key1 = null;
-                        java.util.regex.Matcher matcher = java.util.regex.Pattern.compile(
+                        Matcher matcher = Pattern.compile(
                                         "player\\.peConfig\\.xmlURL\\s*=\\s*['\"]https://www\\.nhaccuatui\\.com/flash/xml\\?html5=true&key1=([a-zA-Z0-9]+)['\"]")
                                 .matcher(html);
                         if (matcher.find()) {
@@ -92,12 +114,8 @@ public class SongsCrawlService {
                         if (key1 != null) {
                             String apiUrl = "https://www.nhaccuatui.com/flash/xml?html5=true&key1=" + key1;
 
-                            String rawCookie = "cookie=_ga_CNWMB8R32F=GS1.1.1744196538.1.0.1744196538.60.0.0; nct_uuid=8C1A508C499144EEA6917C97B2219130; NCTNPLS=e66b31a9a808927a98132d2d6b53e41d; _ga=GA1.2.2135771342.1744196538; JSESSIONID=14j9369paqemkojyi18u4lnyp; _gid=GA1.2.1912492853.1744196538";
-                            Map<String, String> cookies = new HashMap<>();
-                            for (String c : rawCookie.split(";")) {
-                                String[] pair = c.trim().split("=", 2);
-                                if (pair.length == 2) cookies.put(pair[0], pair[1]);
-                            }
+                            // Đọc cookie từ file
+                            Map<String, String> cookies = readCookiesFromFile("cookie.txt");
 
                             Connection.Response response = Jsoup.connect(apiUrl)
                                     .ignoreContentType(true)
@@ -132,11 +150,9 @@ public class SongsCrawlService {
                     }
                 }
 
-                // Add artist info along with other details
-                songData.put("artist", artist);  // Add the artist name
-
+                songData.put("artist", artist);
                 result.put(title, songData);
-                counter++;  // Increment counter after processing each song
+                counter++;
             }
         } catch (Exception e) {
             result.put("❌ Error", e.getMessage());
