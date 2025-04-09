@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/songs")
@@ -34,8 +35,6 @@ public class SongsController {
             return ResponseEntity.status(500).body("Error during indexing");
         }
     }
-
-
     @GetMapping("/titles")
     public List<String> getAllSongTitles() {
         return songsService.getAllSongTitles();
@@ -44,6 +43,7 @@ public class SongsController {
     public List<SongDTO> getAllSongs() {
         return songsService.getAllSongs(); // Gọi tới service để lấy dữ liệu
     }
+
 }
 
 

@@ -1,7 +1,6 @@
 package org.example.bts_backend.Schedulers;
 
 import lombok.RequiredArgsConstructor;
-import org.example.bts_backend.Services.MusicCrawlerService;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

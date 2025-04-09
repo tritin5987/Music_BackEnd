@@ -13,27 +13,16 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.*;
 import java.text.Normalizer;
-
 @Service
-public class SongsService {
-
+public class SongsCrawlService {
     @Autowired
     private SongsRepository songsRepository;
 
     @Autowired
     private LuceneIndexer luceneIndexer;
-    
+
     @Autowired
     private LuceneSearcher luceneSearcher;
-
-
-    public List<String> getAllSongTitles() {
-        return songsRepository.findAllSongTitles();
-    }
-    public void indexAllSongs() throws IOException {
-        List<Songs> allSongs = songsRepository.findAll();
-        luceneIndexer.indexSongs(allSongs);
-    }
 
     public String normalizeKeyword(String keyword) {
         if (keyword == null || keyword.isEmpty()) {
@@ -46,15 +35,7 @@ public class SongsService {
         return normalized.replaceAll("[^a-zA-Z0-9\\s]", "").toLowerCase();
     }
 
-    // Tìm kiếm bằng Lucene với từ khóa đã chuẩn hóa
-    public List<SongDTO> searchSongsByKeyword(String keyword) throws Exception {
-        String normalizedKeyword = normalizeKeyword(keyword);
-        return luceneSearcher.searchSongs(normalizedKeyword);
-    }
 
-    public List<SongDTO> getAllSongs() {
-        return songsRepository.findAllSongs(); // Trả về danh sách các bài hát dưới dạng SongDTO
-    }
     // So sánh bài hát từ trang NCT với database
     public Map<String, String> compareSongsFromNCT() {
         Map<String, String> result = new LinkedHashMap<>();
@@ -88,6 +69,4 @@ public class SongsService {
 
         return result;
     }
-
-
 }

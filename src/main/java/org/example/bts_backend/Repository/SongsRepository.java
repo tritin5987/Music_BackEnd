@@ -26,6 +26,7 @@ public interface SongsRepository extends JpaRepository<Songs, String> {
     List<SongDTO> findAllSongs();
 
     Optional<Songs> findByTitleAndArtist(String title, String artist);
+    boolean existsByTitleAndArtist(String title, String artist);
 
 }
 
